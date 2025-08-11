@@ -1,0 +1,56 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h5>Customers</h5>
+    <button class="btn btn-primary" (click)="openCreateModal()">+ New Customer</button>
+  </div>
+  <div class="card-body">
+    <ngx-datatable
+      class="bootstrap"
+      [rows]="customers"
+      [count]="totalCount"
+      [limit]="list.maxResultCount"
+      [offset]="list.page"
+      [columnMode]="'force'"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      [rowHeight]="'auto'">
+      <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+      <ngx-datatable-column name="Risk Limit" prop="riskLimit"></ngx-datatable-column>
+      <ngx-datatable-column name="Bill Address" prop="billAddress"></ngx-datatable-column>
+      <ngx-datatable-column name="Actions">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-sm btn-info me-2" (click)="openEditModal(row)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="delete(row.id)">Delete</button>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</div>
+
+<!-- Modal -->
+<ng-template #customerModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">{{selectedCustomer ? 'Edit' : 'New'}} Customer</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form #form="ngForm">
+      <div class="mb-3">
+        <label>Name</label>
+        <input type="text" class="form-control" [(ngModel)]="formModel.name" name="name" required />
+      </div>
+      <div class="mb-3">
+        <label>Risk Limit</label>
+        <input type="number" class="form-control" [(ngModel)]="formModel.riskLimit" name="riskLimit" required />
+      </div>
+      <div class="mb-3">
+        <label>Bill Address</label>
+        <input type="text" class="form-control" [(ngModel)]="formModel.billAddress" name="billAddress" required />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="save(modal)">Save</button>
+  </div>
+</ng-template>

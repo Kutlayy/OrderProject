@@ -1,0 +1,97 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>{{ 'Menu:Stocks' | abpLocalization }}</h4>
+
+  <button class="btn btn-primary" (click)="openCreate()">
+    {{ 'NewStock' | abpLocalization }}
+  </button>
+</div>
+
+<ngx-datatable
+  class="bootstrap"
+  [rows]="data.items || []"
+  [count]="data.totalCount || 0"
+  [columnMode]="'force'"
+  [headerHeight]="48"
+  [footerHeight]="56"
+  [rowHeight]="'auto'"
+  [limit]="pageSize"
+  [offset]="pageNumber"
+  (page)="onPage($event)"
+  (sort)="onSort($event)"
+>
+  <ngx-datatable-column name="{{ 'Name' | abpLocalization }}" prop="name"></ngx-datatable-column>
+  <ngx-datatable-column name="{{ 'Quantity' | abpLocalization }}" prop="quantity"></ngx-datatable-column>
+  <ngx-datatable-column name="{{ 'Price' | abpLocalization }}" prop="price"></ngx-datatable-column>
+
+  <ngx-datatable-column name="{{ 'Actions' | abpLocalization }}" [canAutoResize]="false" [width]="200">
+    <ng-template let-row="row" ngx-datatable-cell-template>
+      <button class="btn btn-sm btn-outline-primary me-2" (click)="openEdit(row)">
+        {{ 'Edit' | abpLocalization }}
+      </button>
+      <button class="btn btn-sm btn-outline-danger" (click)="delete(row)">
+        {{ 'Delete' | abpLocalization }}
+      </button>
+    </ng-template>
+  </ngx-datatable-column>
+</ngx-datatable>
+
+<!-- Create/Edit Modal -->
+<ng-template #stockModal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ (formModel.id ? 'EditStock' : 'NewStock') | abpLocalization }}
+    </h5>
+    <button type="button" class="btn-close" (click)="modalRef.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <!-- ✅ Template-driven form: input kırmızısı biter -->
+    <form #stockForm="ngForm" (ngSubmit)="save(stockForm)">
+      <input type="hidden" name="id" [(ngModel)]="formModel.id" />
+
+      <div class="mb-3">
+        <label class="form-label">{{ 'Name' | abpLocalization }}</label>
+        <input
+          class="form-control"
+          type="text"
+          name="name"
+          [(ngModel)]="formModel.name"
+          required
+          maxlength="128"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">{{ 'Quantity' | abpLocalization }}</label>
+        <input
+          class="form-control"
+          type="number"
+          name="quantity"
+          [(ngModel)]="formModel.quantity"
+          required
+          min="0"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">{{ 'Price' | abpLocalization }}</label>
+        <input
+          class="form-control"
+          type="number"
+          name="price"
+          [(ngModel)]="formModel.price"
+          required
+          min="0"
+          step="0.01"
+        />
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="modalRef.dismiss()">{{ 'Cancel' | abpLocalization }}</button>
+    <button class="btn btn-primary" [disabled]="isBusy || !stockForm.valid" (click)="save(stockForm)">
+      {{ 'Save' | abpLocalization }}
+    </button>
+  </div>
+</ng-template>

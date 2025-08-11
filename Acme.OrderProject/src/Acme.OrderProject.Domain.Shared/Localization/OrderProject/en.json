@@ -1,0 +1,58 @@
+{
+  "Culture": "en",
+  "Texts": {
+    "Menu:Home": "Home",
+    "Welcome": "Welcome",
+    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP Framework. For more information, visit abp.io.",
+
+    "Menu:Customers": "Customers",
+    "Menu:Stocks": "Stocks",
+    "Menu:Orders": "Orders",
+
+    "Actions": "Actions",
+    "Close": "Close",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Create": "Create",
+    "Save": "Save",
+    "Cancel": "Cancel",
+    "Yes": "Yes",
+    "No": "No",
+
+    "AreYouSure": "Are you sure?",
+    "AreYouSureToDelete": "Are you sure you want to delete this item?",
+    "CannotDeleteCustomerWithOrders": "Cannot delete customer with existing orders.",
+    "CannotDeleteStockWithOrders": "Cannot delete stock used in existing orders.",
+
+    "CreationTime": "Creation time",
+
+    "Name": "Name",
+    "RiskLimit": "Risk Limit",
+    "BillAddress": "Billing Address",
+
+    "NewCustomer": "New customer",
+    "EditCustomer": "Edit customer",
+
+    "Quantity": "Quantity",
+    "Price": "Price",
+    "NewStock": "New stock",
+    "EditStock": "Edit stock",
+
+    "OrderDate": "Order Date",
+    "DeliveryAddress": "Delivery Address",
+    "TotalAmount": "Total Amount",
+    "IsApproved": "Approved",
+    "OrderLines": "Order Lines",
+    "Stock": "Stock",
+    "LineTotal": "Line Total",
+    "AddLine": "Add Line",
+    "ApproveOrder": "Approve Order",
+    "NewOrder": "New order",
+    "EditOrder": "Edit order",
+    "SelectCustomer": "Select customer",
+    "SelectStock": "Select stock",
+
+    "Error:InsufficientStock": "Not enough stock available.",
+    "Error:RiskLimitExceeded": "Customer's risk limit exceeded."
+  }
+}

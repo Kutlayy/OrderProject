@@ -1,1 +1,87 @@
-<p>order works!</p>
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h5>Orders</h5>
+    <button class="btn btn-primary" (click)="openCreate()">+ New Order</button>
+  </div>
+  <div class="card-body">
+    <ngx-datatable
+      class="bootstrap"
+      [rows]="orders"
+      [count]="totalCount"
+      [limit]="list.maxResultCount"
+      [offset]="list.page"
+      [columnMode]="'force'"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      [rowHeight]="'auto'">
+      <ngx-datatable-column name="Customer" prop="customerId"></ngx-datatable-column>
+      <ngx-datatable-column name="Order Date" prop="orderDate"></ngx-datatable-column>
+      <ngx-datatable-column name="Delivery Address" prop="deliveryAddress"></ngx-datatable-column>
+      <ngx-datatable-column name="Approved" prop="isApproved"></ngx-datatable-column>
+      <ngx-datatable-column name="Total" prop="totalAmount"></ngx-datatable-column>
+      <ngx-datatable-column name="Actions">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-sm btn-success me-2" (click)="openAddLine(row)">Add Line</button>
+          <button class="btn btn-sm btn-info me-2" [disabled]="row.isApproved" (click)="approve(row)">Approve</button>
+          <button class="btn btn-sm btn-danger" (click)="delete(row.id)">Delete</button>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
+</div>
+
+<!-- Create Order Modal -->
+<ng-template #orderModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">New Order</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form #orderForm="ngForm">
+      <div class="mb-3">
+        <label>Customer</label>
+        <select class="form-select" [(ngModel)]="orderForm.customerId" name="customerId" required>
+          <option *ngFor="let c of customers" [value]="c.id">{{ c.name }}</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Order Date</label>
+        <input class="form-control" type="date" [(ngModel)]="orderForm.orderDate" name="orderDate" required />
+      </div>
+      <div class="mb-3">
+        <label>Delivery Address</label>
+        <input class="form-control" type="text" [(ngModel)]="orderForm.deliveryAddress" name="deliveryAddress" required />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="saveOrder(modal)">Save</button>
+  </div>
+</ng-template>
+
+<!-- Add Line Modal -->
+<ng-template #lineModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Add Line</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <form #lineForm="ngForm">
+      <div class="mb-3">
+        <label>Stock</label>
+        <select class="form-select" [(ngModel)]="lineForm.stockId" name="stockId" required>
+          <option *ngFor="let s of stocks" [value]="s.id">{{ s.name }}</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Quantity</label>
+        <input class="form-control" type="number" [(ngModel)]="lineForm.quantity" name="quantity" required min="1" />
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="saveLine(modal)">Save</button>
+  </div>
+</ng-template>

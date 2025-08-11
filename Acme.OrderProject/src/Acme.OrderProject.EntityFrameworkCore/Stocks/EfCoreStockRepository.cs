@@ -1,4 +1,5 @@
 ﻿using Acme.OrderProject.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,10 @@ namespace Acme.OrderProject.Stocks
         {
         }
 
-        public Task<bool> IsUsedInOrdersAsync(Guid stockId)
+        public async Task<bool> IsUsedInOrdersAsync(Guid stockId)
         {
-            throw new NotImplementedException();
+            var dbContext = await GetDbContextAsync();
+            return await dbContext.OrderLines.AnyAsync(l => l.StockId == stockId);
         }
     }
 }

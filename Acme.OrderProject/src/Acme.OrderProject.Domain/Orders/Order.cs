@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Acme.OrderProject.Orders
 {
-    public class Order : AggregateRoot<Guid> // veya Entity<Guid>
+    public class Order : AuditedAggregateRoot<Guid> // veya Entity<Guid>
     {
         // EF Core için parametresiz ctor şart (protected yeterli)
         protected Order() { }
@@ -22,10 +22,5 @@ namespace Acme.OrderProject.Orders
         public bool IsApproved { get; set; }
 
         public ICollection<OrderLine> Lines { get; set; } = new List<OrderLine>();
-
-        public static object CreationTime()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

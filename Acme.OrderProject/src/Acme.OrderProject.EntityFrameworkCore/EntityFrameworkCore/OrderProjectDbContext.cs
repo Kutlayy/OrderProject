@@ -85,7 +85,7 @@ public class OrderProjectDbContext :
 
             b.Property(x => x.RiskLimit)
                 .IsRequired()
-                .HasColumnType("decimal(18,21)");
+                .HasColumnType("decimal(18,2)");
 
             b.Property(x => x.BillAddress)
                 .IsRequired()

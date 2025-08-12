@@ -10,10 +10,14 @@ namespace Acme.OrderProject.Customers
     public class CustomerAppService : ApplicationService, ICustomerAppService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly CustomerManager _customerManager;
 
-        public CustomerAppService(ICustomerRepository customerRepository)
+        public CustomerAppService(
+            ICustomerRepository customerRepository,
+            CustomerManager customerManager)
         {
             _customerRepository = customerRepository;
+            _customerManager = customerManager;
         }
 
         public async Task<CustomerDto> GetAsync(Guid id)
@@ -40,35 +44,26 @@ namespace Acme.OrderProject.Customers
 
         public async Task<CustomerDto> UpdateAsync(Guid id, CreateUpdateCustomerDto input)
         {
-            var customer = await _customerRepository.GetAsync(id);
-
-            customer.Name = input.Name;
-            customer.RiskLimit = input.RiskLimit;
-            customer.BillAddress = input.BillAddress;
-
-            await _customerRepository.UpdateAsync(customer, autoSave: true);
+            var customer = await _customerManager.UpdateAsync(
+                id,
+                input.Name,
+                input.RiskLimit,
+                input.BillAddress);
 
             return ObjectMapper.Map<Customer, CustomerDto>(customer);
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var hasOrders = await _customerRepository.HasOrdersAsync(id);
-
-            if (hasOrders)
-            {
-                throw new BusinessException("Cannot delete customer with existing orders.");
-            }
-
-            await _customerRepository.DeleteAsync(id);
+            await _customerManager.DeleteAsync(id);
         }
 
         public async Task<CustomerDto> CreateAsync(CreateUpdateCustomerDto input)
         {
-            var entity = ObjectMapper.Map<CreateUpdateCustomerDto, Customer>(input);
-
-            // anında kaydetmek için autoSave: true
-            entity = await _customerRepository.InsertAsync(entity, autoSave: true);
+            var entity = await _customerManager.CreateAsync(
+                input.Name,
+                input.RiskLimit,
+                input.BillAddress);
 
             return ObjectMapper.Map<Customer, CustomerDto>(entity);
         }

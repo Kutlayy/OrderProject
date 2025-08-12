@@ -14,6 +14,11 @@ namespace Acme.OrderProject.Customers
         public decimal RiskLimit { get; set; }
 
         public string BillAddress { get; set; }
+
+        public Customer()
+        {
+
+        }
         public Customer(Guid id) : base(id) { }
 
     }

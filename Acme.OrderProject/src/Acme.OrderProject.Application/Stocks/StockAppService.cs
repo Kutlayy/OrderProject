@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp;
 
 namespace Acme.OrderProject.Stocks
 {
     public class StockAppService : ApplicationService, IStockAppService
     {
         private readonly IStockRepository _stockRepository;
+        private readonly StockManager _stockManager;
 
-        public StockAppService(IStockRepository stockRepository)
+        public StockAppService(
+            IStockRepository stockRepository,
+            StockManager stockManager)
         {
             _stockRepository = stockRepository;
+            _stockManager = stockManager;
         }
 
         public async Task<StockDto> GetAsync(Guid id)
@@ -31,7 +32,11 @@ namespace Acme.OrderProject.Stocks
         }
         public async Task<StockDto> CreateAsync(CreateUpdateStockDto input)
         {
-            var stock = ObjectMapper.Map<CreateUpdateStockDto, Stock>(input);
+            var stock = await _stockManager.CreateAsync(
+                input.Name,
+                input.Quantity,
+                input.Price);
+
             stock = await _stockRepository.InsertAsync(stock, autoSave: true);
             return ObjectMapper.Map<Stock, StockDto>(stock);
         }
@@ -41,16 +46,13 @@ namespace Acme.OrderProject.Stocks
             stock.Name = input.Name;
             stock.Quantity = input.Quantity;
             stock.Price = input.Price;
-            await  _stockRepository.UpdateAsync(stock, autoSave: true);
-            return ObjectMapper.Map<Stock, StockDto>(stock);    
+            await _stockRepository.UpdateAsync(stock, autoSave: true);
+            return ObjectMapper.Map<Stock, StockDto>(stock);
         }
         public async Task DeleteAsync(Guid id)
         {
-            if (await _stockRepository.IsUsedInOrdersAsync(id))
-            {
-                throw new BusinessException("Cannot delete stock with existing orders.");
-            }
-            await _stockRepository.DeleteAsync(id, autoSave: true); 
+            await _stockManager.CheckDeleteAsync(id);
+            await _stockRepository.DeleteAsync(id, autoSave: true);
 
         }
 

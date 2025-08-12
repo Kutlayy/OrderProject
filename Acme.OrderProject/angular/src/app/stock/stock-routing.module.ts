@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { authGuard, permissionGuard } from '@abp/ng.core';
+import { authGuard } from '@abp/ng.core';
 import { StockComponent } from './stock.component';
 
 const routes: Routes = [
   {
     path: '',
     component: StockComponent,
-    canActivate: [authGuard, permissionGuard],
-    data: { requiredPolicy: 'OrderProject.Stocks' }, // backend permission: OrderProjectPermissions.Stocks.Default
+    // Remove permission guard so authenticated users can access the Stocks page
+    canActivate: [authGuard],
   },
 ];
 

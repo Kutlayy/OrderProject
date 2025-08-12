@@ -67,25 +67,25 @@ export class OrderComponent implements OnInit {
 
   openCreate() {
     this.orderForm = {} as any;
+    this.lineForm = { quantity: 1 } as any;
     this.modal.open(this.orderModal);
   }
 
   saveOrder(modalRef: any) {
-    this.orderService.create(this.orderForm).subscribe(() => {
-      this.list.get();
-      modalRef.close();
+    this.orderService.create(this.orderForm).subscribe((order) => {
+      if (this.lineForm.stockId) {
+        this.orderService
+          .addLine({ ...this.lineForm, orderId: order.id })
+          .subscribe(() => {
+            this.list.get();
+            modalRef.close();
+          });
+      } else {
+        this.list.get();
+        modalRef.close();
+      }
     });
   }
-
-  delete(id: string) {
-    this.confirm
-      .warn('::AreYouSureToDelete', '::AreYouSure')
-      .subscribe((result) => {
-        if (result !== Confirmation.Status.confirm) return;
-        this.orderService.delete(id).subscribe(() => this.list.get());
-      });
-  }
-
   approve(order: OrderDto) {
     this.orderService.approve(order.id).subscribe(() => this.list.get());
   }

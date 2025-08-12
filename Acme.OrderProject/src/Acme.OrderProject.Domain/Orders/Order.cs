@@ -17,7 +17,7 @@ namespace Acme.OrderProject.Orders
 
         public Guid CustomerId { get; set; }
         public DateTime OrderDate { get; set; }
-        public string DeliveryAddress { get; set; } = default!;
+        public string? DeliveryAddress { get; set; }
         public decimal TotalAmount { get; set; }
         public bool IsApproved { get; set; }
 

@@ -1,23 +1,10 @@
-import {
-  Component,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
-import {
-  ListService,
-  PagedResultDto,
-} from '@abp/ng.core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ListService, PagedResultDto } from '@abp/ng.core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {
-  OrderService,
-  OrderDto,
-  CreateOrderDto,
-  AddOrderLineDto,
-} from '../proxy/orders';
+import { OrderService, OrderDto, CreateOrderDto, AddOrderLineDto } from '../proxy/orders';
 import { CustomerService, CustomerDto } from '../proxy/customers';
 import { StockService, StockDto } from '../proxy/stocks';
-import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
+import { ConfirmationService } from '@abp/ng.theme.shared';
 
 @Component({
   selector: 'app-order',
@@ -31,6 +18,7 @@ export class OrderComponent implements OnInit {
   totalCount = 0;
 
   customers: CustomerDto[] = [];
+  customerMap = new Map<string, string>();
   stocks: StockDto[] = [];
 
   orderForm: CreateOrderDto = {} as any;
@@ -50,49 +38,56 @@ export class OrderComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.customerService
-      .getList({ skipCount: 0, maxResultCount: 100 })
-      .subscribe((res) => (this.customers = res.items));
-    this.stockService
-      .getList({ skipCount: 0, maxResultCount: 100 })
-      .subscribe((res) => (this.stocks = res.items));
+    this.customerService.getList({ skipCount: 0, maxResultCount: 100 }).subscribe(res => {
+      this.customers = res.items;
+      this.customerMap = new Map(res.items.map(c => [c.id!, c.name!]));
+    });
 
-    this.list
-      .hookToQuery((query) => this.orderService.getList(query))
-      .subscribe((res: PagedResultDto<OrderDto>) => {
-        this.orders = res.items;
-        this.totalCount = res.totalCount;
-      });
+    this.stockService.getList({ skipCount: 0, maxResultCount: 100 }).subscribe(res => (this.stocks = res.items));
+
+    this.list.hookToQuery(query => this.orderService.getList(query)).subscribe((res: PagedResultDto<OrderDto>) => {
+      this.orders = res.items;
+      this.totalCount = res.totalCount;
+    });
+  }
+
+  customerName(id?: string) {
+    return (id && this.customerMap.get(id)) || '—';
   }
 
   openCreate() {
-    this.orderForm = {} as any;
+    this.orderForm = {
+      customerId: undefined as any,
+      orderDate: new Date().toISOString().slice(0, 10) as any,
+      deliveryAddress: ''
+    } as any;
     this.lineForm = { quantity: 1 } as any;
     this.modal.open(this.orderModal);
   }
 
   saveOrder(modalRef: any) {
-    this.orderService.create(this.orderForm).subscribe((order) => {
+    this.orderForm.deliveryAddress = (this.orderForm.deliveryAddress as any || '').trim() as any;
+
+    this.orderService.create(this.orderForm).subscribe(order => {
       if (this.lineForm.stockId) {
-        this.orderService
-          .addLine({ ...this.lineForm, orderId: order.id })
-          .subscribe(() => {
-            this.list.get();
-            modalRef.close();
-          });
+        this.orderService.addLine({ ...this.lineForm, orderId: order.id }).subscribe(() => {
+          this.list.get();
+          modalRef.close();
+        });
       } else {
         this.list.get();
         modalRef.close();
       }
     });
   }
+
   approve(order: OrderDto) {
     this.orderService.approve(order.id).subscribe(() => this.list.get());
   }
 
   openAddLine(order: OrderDto) {
     this.selectedOrder = order;
-    this.lineForm = { orderId: order.id, stockId: undefined, quantity: 1 };
+    this.lineForm = { orderId: order.id, stockId: undefined, quantity: 1 } as any;
     this.modal.open(this.lineModal);
   }
 
@@ -101,5 +96,9 @@ export class OrderComponent implements OnInit {
       this.list.get();
       modalRef.close();
     });
+  }
+
+  delete(id: string) {
+    this.orderService.delete(id).subscribe(() => this.list.get());
   }
 }

@@ -118,8 +118,8 @@ public class OrderProjectDbContext :
             b.ConfigureByConvention();
 
             b.Property(x => x.DeliveryAddress)
-                
-                .HasMaxLength(256);
+                .HasMaxLength(256)
+                .IsRequired(false);
 
             b.Property(x => x.TotalAmount)
                 .IsRequired()

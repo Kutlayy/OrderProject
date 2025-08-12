@@ -1,8 +1,9 @@
 <div class="card">
-  <div class="card-header d-flex justify-content-between">
-    <h5>Orders</h5>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="m-0">Orders</h5>
     <button class="btn btn-primary" (click)="openCreate()">+ New Order</button>
   </div>
+
   <div class="card-body">
     <ngx-datatable
       class="bootstrap"
@@ -14,12 +15,42 @@
       [headerHeight]="50"
       [footerHeight]="50"
       [rowHeight]="'auto'">
-      <ngx-datatable-column name="Customer" prop="customerId"></ngx-datatable-column>
-      <ngx-datatable-column name="Order Date" prop="orderDate"></ngx-datatable-column>
-      <ngx-datatable-column name="Delivery Address" prop="deliveryAddress"></ngx-datatable-column>
-      <ngx-datatable-column name="Approved" prop="isApproved"></ngx-datatable-column>
-      <ngx-datatable-column name="Total" prop="totalAmount"></ngx-datatable-column>
-      <ngx-datatable-column name="Actions">
+
+      <ngx-datatable-column name="Customer">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          {{ customerName(row.customerId) }}
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Order Date">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          {{ row.orderDate | date:'dd.MM.yyyy' }}
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Delivery Address">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span class="d-inline-block text-truncate" style="max-width: 260px">
+            {{ row.deliveryAddress }}
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Approved">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span class="badge" [ngClass]="row.isApproved ? 'bg-success' : 'bg-secondary'">
+            {{ row.isApproved ? 'Approved' : 'Pending' }}
+          </span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Total">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          {{ row.totalAmount | currency:'TRY':'symbol-narrow':'1.0-2' }}
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Actions" [width]="240">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <button class="btn btn-sm btn-success me-2" (click)="openAddLine(row)">Add Line</button>
           <button class="btn btn-sm btn-info me-2" [disabled]="row.isApproved" (click)="approve(row)">Approve</button>
@@ -30,14 +61,13 @@
   </div>
 </div>
 
-<!-- Create Order Modal -->
 <ng-template #orderModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">New Order</h5>
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
-    <form #orderForm="ngForm">
+    <form #orderNgForm="ngForm">
       <div class="mb-3">
         <label>Customer</label>
         <select class="form-select" [(ngModel)]="orderForm.customerId" name="customerId" required>
@@ -52,15 +82,15 @@
         <label>Delivery Address</label>
         <input class="form-control" type="text" [(ngModel)]="orderForm.deliveryAddress" name="deliveryAddress" required />
       </div>
-       <div class="mb-3">
+      <div class="mb-3">
         <label>Stock</label>
-        <select class="form-select" [(ngModel)]="lineForm.stockId" name="lineStockId" required>
+        <select class="form-select" [(ngModel)]="lineForm.stockId" name="lineStockId">
           <option *ngFor="let s of stocks" [value]="s.id">{{ s.name }}</option>
         </select>
       </div>
       <div class="mb-3">
         <label>Quantity</label>
-        <input class="form-control" type="number" [(ngModel)]="lineForm.quantity" name="lineQuantity" required min="1" />
+        <input class="form-control" type="number" [(ngModel)]="lineForm.quantity" name="lineQuantity" min="1" />
       </div>
     </form>
   </div>
@@ -70,7 +100,6 @@
   </div>
 </ng-template>
 
-<!-- Add Line Modal -->
 <ng-template #lineModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">Add Line</h5>

@@ -1,6 +1,7 @@
 {
   "Culture": "en",
   "Texts": {
+    "ProjectName": "OrderProject",
     "Menu:Home": "Home",
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP Framework. For more information, visit abp.io.",

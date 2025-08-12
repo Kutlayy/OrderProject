@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 
 namespace Acme.OrderProject.Orders;
@@ -15,7 +16,7 @@ public class OrderDto : AuditedEntityDto<Guid>
 {
     public Guid CustomerId { get; set; }
     public DateTime OrderDate { get; set; }
-    public string? DeliveryAddress { get; set; }
+    public string DeliveryAddress { get; set; }
     public bool IsApproved { get; set; }
     public decimal TotalAmount { get; set; }
     public List<OrderLineDto> Lines { get; set; } = new();
@@ -23,9 +24,15 @@ public class OrderDto : AuditedEntityDto<Guid>
 
 public class CreateOrderDto
 {
+    [Required]
     public Guid CustomerId { get; set; }
+
+    [Required]
     public DateTime OrderDate { get; set; }
-    public string? DeliveryAddress { get; set; }
+
+    [Required]
+    [StringLength(256)]
+    public string DeliveryAddress { get; set; }
 }
 
 public class AddOrderLineDto

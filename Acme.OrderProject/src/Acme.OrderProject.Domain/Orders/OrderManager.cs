@@ -25,9 +25,13 @@ public class OrderManager : DomainService
         _guidGenerator = guidGenerator;
     }
 
-    public async Task<Order> CreateAsync(Guid customerId, DateTime orderDate, string deliveryAddress)
+    public async Task<Order> CreateAsync(Guid customerId, DateTime orderDate, string? deliveryAddress)
     {
-        await _customerRepository.GetAsync(customerId);
+        var customer = await _customerRepository.FindAsync(customerId);
+        if (customer == null)
+        {
+            throw new BusinessException("Customer not found.");
+        }
 
         return new Order(_guidGenerator.Create())
         {
@@ -37,8 +41,6 @@ public class OrderManager : DomainService
             IsApproved = false,
             TotalAmount = 0m
         };
-
-
     }
 
     public async Task<OrderLine> AddLineAsync(Order order, Guid stockId, int quantity)
@@ -114,9 +116,9 @@ public class OrderManager : DomainService
 
     public void CheckDeleteAsync(Order order)
     {
-        if (order.IsApproved)
+        if (order.IsApproved == true)
         {
-            throw new BusinessException("Approved orders cannot be deleted.");
+            throw new UserFriendlyException("Approved orders cannot be deleted.");
         }
     }
 }
